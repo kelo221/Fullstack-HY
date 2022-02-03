@@ -48,9 +48,6 @@ const App = () => {
         ]
     }
 
-/*    console.log(course.name)
-    console.log(course.parts[0].name)
-    console.log(course.parts[0].exercises)*/
 
     return (
         <div>

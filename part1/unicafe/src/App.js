@@ -8,20 +8,6 @@ const Button = ({onClick, text}) => (
 )
 
 
-/*function CountReturner({counter, name}) {
-
-    if (!isNaN(counter)) {
-
-        if (name === "of positive") {
-            return (<p> {counter} {name} %</p>)
-        } else
-            return (<p> {counter} {name} </p>)
-
-    } else {
-        return (<p>{0} {name}</p>)
-    }
-}*/
-
 function StatisticLine({text, value}) {
     return (
         <>
@@ -32,7 +18,7 @@ function StatisticLine({text, value}) {
             </tr>
 
         </>
-//        <p> {value} {text} </p>
+
 
 
     )
@@ -96,17 +82,6 @@ const App = () => {
             />
             <h1>Statistics</h1>
 
-            {/*            <CountReturner counter={positive} name="positive"/>
-
-            <CountReturner counter={neutral} name="neutral"/>
-
-            <CountReturner counter={negative} name="negative"/>
-
-            <CountReturner counter={total} name="total"/>
-
-            <CountReturner counter={avgTotal} name="avgTotal"/>
-
-            <CountReturner counter={avgPos} name="of positive"/>*/}
 
             <Statistics pos={positive} neg={negative} neu={neutral} total={total} avgTotal={avgTotal}
                         avgPos={avgPos}/>
