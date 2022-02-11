@@ -1,13 +1,26 @@
-import React, {useState} from 'react'
-import RenderContent from './components/RenderContent'
+import React, { useState, useEffect } from 'react'
 import InputBox from './components/InputBox'
 import PersonHandler from './components/personHandler'
+import noteService from './components/services/notes'
 
-const App = (props) => {
-    const [notes, setNotes] = useState(props.notes)
+
+
+
+const App = () => {
+    const [notes, setNotes] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [nameFilter, setNewFilter] = useState('')
+
+
+
+    useEffect(() => {
+        noteService
+            .getAll()
+            .then(initialNames => {
+                setNotes(initialNames)
+            })
+    }, [])
 
     const addNote = (event) => {
         event.preventDefault()
@@ -21,8 +34,24 @@ const App = (props) => {
                 id: notes.length + 1,
             }
             setNotes(notes.concat(noteObject))
+
+            noteService
+                .create(noteObject)
+                .then(response => {
+                    setNotes(notes.concat(response.data))
+                    setNewName('')
+                })
+
         } else {
-            alert(`${newName} is already added to phonebook`)
+
+            const personObject = ((notes.find(element => element.name === newName)));
+
+
+            if (window.confirm(`${newName} is already added to phonebook. Replace old number?`)) {
+                personObject.number = newNumber
+                noteService.update(personObject.id, personObject).then(r => console.log(r))
+            }
+
         }
         setNewName('')
         setNewNumber('')
@@ -42,6 +71,7 @@ const App = (props) => {
         setNewFilter(event.target.value)
 
     }
+
 
     const notesToShow = notes.filter(note => note.name.toLowerCase().includes(`${nameFilter.toLowerCase()}`))
 
