@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+
 const baseUrl = 'http://localhost:3001/persons'
 
 const getAll = () => {
@@ -19,7 +20,9 @@ const update = (id, newObject) => {
 
 const del = (id) => {
     const request = axios.delete(`${baseUrl}/${id}`)
-    return request.then(response => response.data)
+    return request.then(response => response.data).catch(error => {
+       console.log("failed", error)
+    })
 }
 
 
