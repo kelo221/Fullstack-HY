@@ -1,7 +1,10 @@
 const express = require('express')
 const app = express()
+app.use(express.static('build'))
 
+const cors = require('cors')
 
+app.use(cors())
 
 const morgan = require('morgan')
 
@@ -51,19 +54,18 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
+    console.log(persons)
     response.json(persons)
 })
 
-// http://localhost:3001/api/persons/{"name":"New Name","number":"1234"}
-app.post('/api/persons/:info', (request, response) => {
 
-    const newParams = request.params.info
-    const obj = JSON.parse(newParams)
+app.post('/api/persons',(request, response) => {
+
+    const obj = request.body
 
     console.log(obj)
 
-    const randomId = Math.floor(Math.random() * 1000)
-
+    const randomId = obj.id
 
     const foundName = persons.findIndex(({name}) => name === obj.name)
     console.log(foundName)
@@ -113,9 +115,14 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = parseInt(request.params.id)
+    let checker
 
+    persons.findIndex(function (idCheck) {
+        if(idCheck.id === id)
+            checker = true
+    });
 
-    if (isNaN(id) || id > persons.length || id <= 0) {
+    if (isNaN(id)  || id <= 0 || !checker) {
         response.sendStatus(404)
     } else {
         const foundElement = (element) => element.id === id;

@@ -12,13 +12,15 @@ const App = () => {
     const [newNumber, setNewNumber] = useState('')
     const [nameFilter, setNewFilter] = useState('')
     const [successMessage, setSuccessMessage] = useState(null)
+    const [messageBoxColor, setMessageBoxColor] = useState('Green')
 
 
     useEffect(() => {
         noteService
             .getAll()
             .then(initialNames => {
-                setNotes(initialNames)
+                if (initialNames)
+                    setNotes(initialNames);
             })
     }, [])
 
@@ -27,21 +29,45 @@ const App = () => {
 
         const foundName = (!!(notes.find(element => element.name === newName)));
 
+        const idCheck = () => {
+            for (let i = 0; i < notes.length; i++) {
+                if(notes[i].id !== i+1){
+                    return i+1
+                }
+            }
+        }
+
+
+        let newId = idCheck()
+        console.log(newId)
+
+        if (newId === undefined){
+            console.log("the array should be fine so id will be ", notes.length+1)
+            newId = notes.length+1
+        }
+
+
+
         if (!foundName) {
             const noteObject = {
+                id: newId,
                 name: newName,
                 number: newNumber,
-                id: notes.length + 1,
             }
-            setNotes(notes.concat(noteObject))
+
 
             setSuccessMessage(`'${newName}' was added!`)
 
+            console.log(noteObject)
+
+
+            console.log(notes)
 
             noteService
                 .create(noteObject)
                 .then(response => {
-                    setNotes(notes.concat(response.data))
+                    console.log(response)
+                    setNotes(notes.concat(noteObject))
                     setNewName('')
                 })
 
@@ -61,26 +87,16 @@ const App = () => {
     }
 
     const handleNameChange = (event) => {
-        event.preventDefault()
         setNewName(event.target.value)
     }
 
     const handleNumberChange = (event) => {
-        event.preventDefault()
         setNewNumber(event.target.value)
     }
 
     const handleFilterChange = (event) => {
-        event.preventDefault()
         setNewFilter(event.target.value)
-
     }
-
-
-
-    /// I have absolutely no idea what the undefined issue
-    /// as it refreshes everytime for some reason the latter exercises cannot be done
-    const notesToShow = notes.filter(note => note.name.toLowerCase().includes(`${nameFilter.toLowerCase()}`))
 
 
     return (
@@ -90,7 +106,7 @@ const App = () => {
 
             <h3>Add new</h3>
 
-            <Notification message={successMessage}/>
+            <Notification message={successMessage} colorNew={messageBoxColor}/>
 
             <form onSubmit={addNote}>
 
@@ -108,9 +124,10 @@ const App = () => {
                 <h1>Numbers</h1>
             </div>
 
-            <PersonHandler notesToShow={notesToShow}> </PersonHandler>
+            <PersonHandler notesToShow={notes} nameFilter={nameFilter} setSuccessMessage={setSuccessMessage}
+                           setNotes={setNotes} setMessageColor={setMessageBoxColor}
 
-
+            > </PersonHandler>
         </div>
     )
 }
