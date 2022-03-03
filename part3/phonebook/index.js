@@ -1,5 +1,8 @@
+require("dotenv").config({ path: "./config.env" })
 const express = require('express')
 const app = express()
+const Note = require('./models/note')
+
 app.use(express.static('build'))
 
 const cors = require('cors')
@@ -27,6 +30,7 @@ let options = {
     },
     formatter = new Intl.DateTimeFormat([], options);
 
+/*
 let persons = [
     {
         "id": 1,
@@ -49,13 +53,20 @@ let persons = [
         "number": "39-23-6423122"
     }
 ]
+*/
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
 })
 
 app.get('/api/persons', (request, response) => {
-    console.log(persons)
-    response.json(persons)
+
+    Note.find({}).then(result => {
+        result.forEach(note => {
+            console.log(note.name, note.number, note.identifier)
+        })
+        response.json(result)
+    })
+
 })
 
 
@@ -63,79 +74,98 @@ app.post('/api/persons',(request, response) => {
 
     const obj = request.body
 
-    console.log(obj)
-
-    const randomId = obj.id
-
-    const foundName = persons.findIndex(({name}) => name === obj.name)
-    console.log(foundName)
-
-    const foundNumber = persons.findIndex(({name}) => name === obj.number)
-    console.log(foundNumber)
+    console.log("received obj", obj)
 
 
-    if (foundName === -1) {
 
-        if (obj.name === undefined){
-            return response.status(400).json({
-                error: 'no name given'
-            })
-        }
+    console.log(obj.name)
 
-        if (obj.number === undefined){
-            return response.status(400).json({
-                error: 'no number given'
-            })
-        }
 
-        console.log("added new person")
-        persons.push({id: randomId, name: obj.name.toString(), number: obj.number.toString(),})
-        response.sendStatus(200)
-    } else {
-        return response.status(400).json({
-            error: 'name exists'
+
+    Note.findOne({name: obj.name})
+        .then(result => {
+            if(!result) {
+                console.log("not found", result)
+
+                if (obj.name === undefined){
+                    return response.status(400).json({
+                        error: 'no name given'
+                    })
+                }
+
+                if (obj.number === undefined){
+                    return response.status(400).json({
+                        error: 'no number given'
+                    })
+                }
+
+                console.log(obj)
+
+                console.log("added new person")
+
+                const note = new Note({
+                    identifier: obj.identifier, name: obj.name, number: obj.number
+                })
+
+
+                note.save().then(result => {
+                    console.log('note saved!')
+                })
+
+                response.sendStatus(200)
+
+            }else {
+                console.log("found", result)
+                console.log("error 400")
+                return response.status(400).json({
+                    error: 'name exists'
+                })
+            }
         })
-    }
 
 })
 
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = parseInt(request.params.id)
+    const idNew = parseInt(request.params.id)
 
+    Note.findOne({identifier: idNew}).then(result => {
+        console.log(result)
+        response.json(result)
+    })
 
-    if (isNaN(id) || id > persons.length || id <= 0) {
-        response.sendStatus(404)
-    } else {
-        const foundElement = (element) => element.id === id;
-        response.json(persons[persons.findIndex(foundElement)])
-    }
 })
 
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = parseInt(request.params.id)
-    let checker
+    const id = parseInt(request.params.identifier)
 
-    persons.findIndex(function (idCheck) {
-        if(idCheck.id === id)
+    console.log(id)
+
+    Note.deleteOne({identifier:id}, function(err, result) {
+        if (err) {
+            response.sendStatus(404)
+        } else {
+            response.sendStatus(204)
+        }
+    });
+
+   /* persons.findIndex(function (idCheck) {
+        if(idCheck.identifier === id)
             checker = true
     });
 
     if (isNaN(id)  || id <= 0 || !checker) {
         response.sendStatus(404)
     } else {
-        const foundElement = (element) => element.id === id;
+        const foundElement = (element) => element.identifier === id;
         persons.splice(persons.findIndex(foundElement), 1)
         response.sendStatus(204)
-    }
-})
+    }*/
 
 
-app.get('/info', (request, response) => {
-    let count = persons.length.toString()
-    response.send(`<h1>Phonebook has info for  ${count}</h1>
-                        <p>${(new Date()).toLocaleString([], options)}</p>`)
+
+
 })
 
 const PORT = 3001

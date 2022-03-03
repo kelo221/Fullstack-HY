@@ -9,6 +9,7 @@ const personHandler = ({notesToShow, nameFilter,setSuccessMessage,setNotes,setMe
 
 
     const toggleImportanceOf = (id) => {
+        console.log(id)
         if (window.confirm("Do you really want to delete?")) {
             noteService.del(parseInt(id))
                 .catch(error => {
@@ -34,7 +35,7 @@ const personHandler = ({notesToShow, nameFilter,setSuccessMessage,setNotes,setMe
         notesToShow.filter(person => person.name.toLowerCase().includes(`${nameFilter.toLowerCase()}`)).map(filteredPerson => (
             <React.Fragment key={filteredPerson.id}>
                 <RenderContent numberInfo={filteredPerson}/>
-                <button type="button" onClick={() => toggleImportanceOf(filteredPerson.id)}>Delete</button>
+                <button type="button" onClick={() => toggleImportanceOf(filteredPerson.identifier)}>Delete</button>
             </React.Fragment>
         ))
     )
