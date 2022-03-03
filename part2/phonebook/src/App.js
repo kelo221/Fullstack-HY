@@ -31,7 +31,7 @@ const App = () => {
 
         const idCheck = () => {
             for (let i = 0; i < notes.length; i++) {
-                if(notes[i].id !== i+1){
+                if(notes[i].identifier !== i+1){
                     return i+1
                 }
             }
@@ -50,7 +50,7 @@ const App = () => {
 
         if (!foundName) {
             const noteObject = {
-                id: newId,
+                identifier: newId,
                 name: newName,
                 number: newNumber,
             }
@@ -78,7 +78,7 @@ const App = () => {
 
             if (window.confirm(`${newName} is already added to phonebook. Replace old number?`)) {
                 personObject.number = newNumber
-                noteService.update(personObject.id, personObject).then(r => console.log(r))
+                noteService.update(personObject.identifier, personObject).then(r => console.log(r))
             }
 
         }
