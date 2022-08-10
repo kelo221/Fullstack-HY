@@ -1,13 +1,15 @@
 
 import {OmittedPatient, Patient} from '../types';
-import {omitFields, validatePatientObject} from "./functions/interfaceFunctions";
+import {genUUID, omitFields, validatePatientObject} from "./functions/interfaceFunctions";
 import patientDataJSON from "../../data/PatientData";
 
 const addNewPatient = (req: { body: Patient; }, res: { send: (arg0: Patient) => void; sendStatus: (arg0: number) => void; }): Patient| undefined => {
     const tempObj: Patient = req.body;
+    tempObj.id= genUUID();
+
     const objectWasValid  =  validatePatientObject(tempObj);
 
-    console.log(tempObj);
+    console.log(objectWasValid);
 
     if (objectWasValid) {
         patientDataJSON.push((tempObj ));

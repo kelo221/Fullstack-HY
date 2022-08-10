@@ -3,12 +3,10 @@ import patientService from "../services/patientService";
 const router = express.Router();
 
 router.get('/patients', (_req, res) => {
-    console.log('someone pinged here');
     res.send(patientService.parseSensitiveData());
 });
 
 router.post('/patients', (req, res) => {
-    console.log('someone pinged here2');
     res.send(patientService.addNewPatient(req,res));
 });
 
